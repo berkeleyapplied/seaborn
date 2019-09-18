@@ -388,7 +388,7 @@ def _scipy_univariate_kde(data, bw, gridsize, cut, clip):
 
 def _bivariate_kdeplot(x, y, filled, fill_lowest,
                        kernel, bw, gridsize, cut, clip,
-                       axlabel, cbar, cbar_ax, cbar_kws, ax, **kwargs):
+                       axlabel, cbar, cbar_ax, cbar_kws, ax, norm, **kwargs):
     """Plot a joint KDE estimate as a bivariate contour plot."""
     # Determine the clipping
     if clip is None:
@@ -401,6 +401,9 @@ def _bivariate_kdeplot(x, y, filled, fill_lowest,
         xx, yy, z = _statsmodels_bivariate_kde(x, y, bw, gridsize, cut, clip)
     else:
         xx, yy, z = _scipy_bivariate_kde(x, y, bw, gridsize, cut, clip)
+
+    if norm:
+        z = z/np.max(z)
 
     # Plot the contours
     n_levels = kwargs.pop("n_levels", 10)
@@ -501,7 +504,7 @@ def _scipy_bivariate_kde(x, y, bw, gridsize, cut, clip):
 def kdeplot(data, data2=None, shade=False, vertical=False, kernel="gau",
             bw="scott", gridsize=100, cut=3, clip=None, legend=True,
             cumulative=False, shade_lowest=True, cbar=False, cbar_ax=None,
-            cbar_kws=None, ax=None, **kwargs):
+            cbar_kws=None, ax=None, normalize_to_max=False, **kwargs):
     """Fit and plot a univariate or bivariate kernel density estimate.
 
     Parameters
@@ -692,7 +695,7 @@ def kdeplot(data, data2=None, shade=False, vertical=False, kernel="gau",
     if bivariate:
         ax = _bivariate_kdeplot(x, y, shade, shade_lowest,
                                 kernel, bw, gridsize, cut, clip, legend,
-                                cbar, cbar_ax, cbar_kws, ax, **kwargs)
+                                cbar, cbar_ax, cbar_kws, ax, normalize_to_max, **kwargs)
     else:
         ax = _univariate_kdeplot(data, shade, vertical, kernel, bw,
                                  gridsize, cut, clip, legend, ax,
